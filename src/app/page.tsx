@@ -46,7 +46,7 @@ export default function Home() {
             <ArrowRight className="ml-2" />
           </Button>
         </div>
-        <span className="float-start mt-6 text-xl">created by <Link href={"https://github.com"} className="text-blue-500 underline" >pieter jansen</Link> </span>
+        <span className="float-start mt-6 text-xl">created by <Link href={"https://github.com/pieterjansen8"} className="text-blue-500 underline" >pieter jansen</Link> </span>
       </div>
     </QueryClientProvider>
   )
