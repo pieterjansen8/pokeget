@@ -1,101 +1,119 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from "react"
+import { useQuery, QueryClientProvider, QueryClient } from "@tanstack/react-query"
+import { Button } from "@/components/ui/button"
+import { ArrowRight, ArrowLeft, Loader2 } from 'lucide-react'
+import { motion } from "framer-motion"
+import Link from "next/link"
+const queryClient = new QueryClient()
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [image, setImage] = useState(1)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-gray-100 p-4">
+        <motion.h1 
+          className="text-5xl font-bold mb-12 text-white"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Fetch your Pokémon
+        </motion.h1>
+        <motion.div 
+          className="w-full max-w-md aspect-square mb-8 bg-gray-800 rounded-2xl p-6 shadow-lg flex flex-col overflow-hidden"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Pok img={image} />
+        </motion.div>
+        <div className="flex gap-4">
+          <Button 
+            onClick={() => setImage(old => Math.max(1, old - 1))}
+            className="bg-slate-800 hover:bg-slate-700 text-white transition-all duration-300 ease-in-out transform hover:scale-105"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <ArrowLeft className="mr-2" />
+            Previous
+          </Button>
+          <Button 
+            onClick={() => setImage(old => old + 1)}
+            className="bg-slate-800 hover:bg-slate-700 text-white transition-all duration-300 ease-in-out transform hover:scale-105"
           >
-            Read our docs
-          </a>
+            Next
+            <ArrowRight className="ml-2" />
+          </Button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+        <span className="float-start mt-6 text-xl">created by <Link href={"https://github.com"} className="text-blue-500 underline" >pieter jansen</Link> </span>
+      </div>
+    </QueryClientProvider>
+  )
 }
+
+function Pok({ img }: { img: number }) {
+  const { data, status, error } = useQuery({
+    queryKey: [img],
+    queryFn: async () => {
+      return await fetch(`https://pokeapi.co/api/v2/pokemon/${img}`).then(res => res.clone().json())
+    }
+  })
+
+  if (status === "error") {
+    return (
+      <motion.div 
+        className="w-full h-full flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <span className="text-2xl text-white text-center">
+          ERROR: {(error as Error).message}
+        </span>
+      </motion.div>
+    )
+  }
+
+  if (status === "pending") {
+    return (
+      <motion.div 
+        className="w-full h-full flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Loader2 className="w-12 h-12 text-white animate-spin" />
+      </motion.div>
+    )
+  }
+
+  if (status === "success") {
+    return (
+      <motion.div 
+        className="flex flex-col h-full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-3xl font-bold mb-4 text-center capitalize text-white">
+          {data.forms[0].name}
+        </h2>
+        <div className="flex-grow flex items-center justify-center bg-gray-700 rounded-xl overflow-hidden mb-4 p-4">
+          <motion.img 
+            className="max-w-full max-h-full object-contain filter drop-shadow-lg"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            alt={`Pokemon ${img}`} 
+            src={data.sprites.other.home.front_default}
+          />
+        </div>
+        <span className="text-xl text-center font-semibold text-gray-300">Pokémon #{img}</span>
+      </motion.div>
+    )
+  }
+
+  return null
+}
+
