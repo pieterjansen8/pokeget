@@ -57,6 +57,12 @@ export default function Home() {
 }
 
 function Pok({ img }: { img: number }) {
+  const { data, status, error } = useQuery({
+    queryKey: [img],
+    queryFn: async () => {
+      return await fetch(`https://pokeapi.co/api/v2/pokemon/${img}`).then(res => res.clone().json())
+    }
+  })
   if(img>1025){
     return(
       <motion.div 
@@ -71,12 +77,6 @@ function Pok({ img }: { img: number }) {
        </motion.div>
     )
   }
-  const { data, status, error } = useQuery({
-    queryKey: [img],
-    queryFn: async () => {
-      return await fetch(`https://pokeapi.co/api/v2/pokemon/${img}`).then(res => res.clone().json())
-    }
-  })
   if (status === "error") {
     return (
       <motion.div 
