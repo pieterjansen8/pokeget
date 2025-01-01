@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useQuery, QueryClientProvider, QueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input" 
 import { ArrowRight, ArrowLeft, Loader2 } from 'lucide-react'
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -46,6 +47,9 @@ export default function Home() {
             <ArrowRight className="ml-2" />
           </Button>
         </div>
+        <div className="flex-grow mt-4">
+          <Input type="number" onChange={(e) => {setImage(Number(e.target.value))}} placeholder="Pokemon id"></Input>
+        </div>
         <span className="float-start mt-6 text-xl">created by <Link href={"https://github.com/pieterjansen8"} className="text-blue-500 underline" >pieter jansen</Link> </span>
       </div>
     </QueryClientProvider>
@@ -53,13 +57,26 @@ export default function Home() {
 }
 
 function Pok({ img }: { img: number }) {
+  if(img>1025){
+    return(
+      <motion.div 
+        className="w-full h-full flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <span className="text-2xl text-white text-center">
+          ERROR: Pokemon not found
+        </span>
+       </motion.div>
+    )
+  }
   const { data, status, error } = useQuery({
     queryKey: [img],
     queryFn: async () => {
       return await fetch(`https://pokeapi.co/api/v2/pokemon/${img}`).then(res => res.clone().json())
     }
   })
-
   if (status === "error") {
     return (
       <motion.div 
