@@ -66,6 +66,10 @@ export default function Home() {
 }
 
 const Pok = React.memo(({ img }: { img: number }) => {
+  const { data, error, isLoading } = useSWR(
+    `https://pokeapi.co/api/v2/pokemon/${img}`,
+    fetcher
+  );
   if (img > 1025 || img < 1) {
     return(
         <motion.div
@@ -80,10 +84,6 @@ const Pok = React.memo(({ img }: { img: number }) => {
         </motion.div>
     )
   }
-  const { data, error, isLoading } = useSWR(
-    `https://pokeapi.co/api/v2/pokemon/${img}`,
-    fetcher
-  );
   if (error) {
     return (
       <motion.div
@@ -142,3 +142,5 @@ const Pok = React.memo(({ img }: { img: number }) => {
 
   return null;
 });
+
+Pok.displayName = "Pok";

@@ -76,6 +76,10 @@ export default function Home() {
 }
 
 function Pok({ img }: { img: number }) {
+  const { data, error, isLoading } = useSWR(
+    `https://pokeapi.co/api/v2/pokemon/${img}`,
+    fetcher
+  );
   if (img > 1025 || img < 1) {
     return (
       <motion.div
@@ -90,10 +94,6 @@ function Pok({ img }: { img: number }) {
       </motion.div>
     );
   }
-  const { data, error, isLoading } = useSWR(
-    `https://pokeapi.co/api/v2/pokemon/${img}`,
-    fetcher
-  );
   if (error) {
     return (
       <motion.div
